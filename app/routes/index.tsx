@@ -1,10 +1,16 @@
-import { createElement } from "react";
+import { createElement, lazy } from "react";
 import {
-  createBrowserRouter,
   Navigate,
   RouterProvider,
+  createBrowserRouter,
 } from "react-router-dom";
 import { BaseLayout, MainLayout, RootError } from "../components";
+
+const Dashboard = lazy(() =>
+  import("./dashboard").then((module) => ({
+    default: module.default as React.ComponentType,
+  })),
+);
 
 /**
  * Application routes
@@ -22,7 +28,12 @@ export const router = createBrowserRouter([
     errorElement: <RootError />,
     children: [
       { index: true, element: <Navigate to="/dashboard" replace /> },
-      { path: "dashboard", lazy: () => import("./dashboard") },
+      {
+        path: "dashboard",
+        lazy: async () => ({
+          Component: Dashboard,
+        }),
+      },
     ],
   },
 ]);

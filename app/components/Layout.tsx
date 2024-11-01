@@ -1,60 +1,32 @@
-import { Box, GlobalStyles } from "@mui/joy";
-import { Fragment, Suspense } from "react";
+import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
-import { Logo } from "./Logo";
 import { Toolbar } from "./Toolbar";
 
-/**
- * The main application layout.
- */
-export function MainLayout(): JSX.Element {
+export function MainLayout() {
   return (
-    <Fragment>
-      <GlobalStyles
-        styles={{
-          "#root": {
-            display: "grid",
-            gridTemplateColumns: "auto 1fr",
-            gridTemplateRows: "auto 1fr",
-            height: "100dvh",
-          },
-        }}
-      />
-      <Toolbar sx={{ gridArea: "1 / 2 / 2 / -1" }} />
-
-      <Logo sx={{ gridArea: "1 / 1 / 2 / 2", zIndex: 100 }} />
-
-      <Box sx={{ gridArea: "1 / 2 / -1 / -1", pt: "60px" }}>
-        <Suspense>
-          <Outlet />
-        </Suspense>
-      </Box>
-    </Fragment>
+    <div className="flex min-h-screen flex-col">
+      <Toolbar />
+      <main className="flex-1">
+        <div className="mx-auto w-full max-w-7xl p-6">
+          <Suspense fallback={<div>Loading...</div>}>
+            <Outlet />
+          </Suspense>
+        </div>
+      </main>
+    </div>
   );
 }
 
-export function BaseLayout(): JSX.Element {
+export function BaseLayout() {
   return (
-    <Fragment>
-      <GlobalStyles
-        styles={{
-          "#root": {
-            display: "grid",
-            gridTemplateColumns: "1fr",
-            minHeight: "100vh",
-          },
-        }}
-      />
-
-      <Box sx={{ gridArea: "1 / 1 / 2 / 2 " }}>
-        <Logo />
-      </Box>
-
-      <Box sx={{ gridArea: "1 / 1 / -1 / -1", pt: "60px" }}>
-        <Suspense>
-          <Outlet />
-        </Suspense>
-      </Box>
-    </Fragment>
+    <div className="flex min-h-screen flex-col">
+      <main className="flex-1">
+        <div className="mx-auto w-full max-w-7xl p-6 pt-16">
+          <Suspense fallback={<div>Loading...</div>}>
+            <Outlet />
+          </Suspense>
+        </div>
+      </main>
+    </div>
   );
 }

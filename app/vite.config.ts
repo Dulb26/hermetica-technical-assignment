@@ -1,9 +1,10 @@
 import react from "@vitejs/plugin-react";
 import { URL, fileURLToPath } from "node:url";
 import { loadEnv } from "vite";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 import { defineProject } from "vitest/config";
 
-const publicEnvVars = ["APP_NAME"];
+const publicEnvVars = ["APP_NAME", "SOLANA_CONNECTION_URL"];
 
 /**
  * Vite configuration.
@@ -21,6 +22,30 @@ export default defineProject(async ({ mode }) => {
   return {
     cacheDir: fileURLToPath(new URL("../.cache/vite-app", import.meta.url)),
 
+    define: {
+      global: "globalThis",
+    },
+
+    resolve: {
+      alias: {
+        crypto: "crypto-browserify",
+        stream: "stream-browserify",
+        assert: "assert",
+        http: "stream-http",
+        https: "https-browserify",
+        os: "os-browserify",
+        url: "url",
+      },
+    },
+
+    optimizeDeps: {
+      esbuildOptions: {
+        define: {
+          global: "globalThis",
+        },
+      },
+    },
+
     build: {
       rollupOptions: {
         output: {
@@ -33,23 +58,26 @@ export default defineProject(async ({ mode }) => {
     },
 
     plugins: [
-      // The default Vite plugin for React projects
-      // https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md
       react({
         jsxImportSource: "@emotion/react",
         babel: {
           plugins: ["@emotion/babel-plugin"],
         },
       }),
+      nodePolyfills({
+        // Whether to polyfill specific globals.
+        globals: {
+          Buffer: true,
+          global: true,
+          process: true,
+        },
+        // Whether to polyfill `node:` protocol imports.
+        protocolImports: true,
+      }),
     ],
 
-    server: {
-      proxy: {
-        "/api": {
-          target: process.env.LOCAL_API_ORIGIN ?? process.env.API_ORIGIN,
-          changeOrigin: true,
-        },
-      },
+    css: {
+      postcss: "./postcss.config.cjs",
     },
 
     test: {

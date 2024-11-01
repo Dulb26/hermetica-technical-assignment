@@ -5,7 +5,6 @@ class BitcoinService {
 
   async connect(): Promise<{ address: string }> {
     try {
-      // Dynamic import for client-side only
       const { default: Wallet } = await import("sats-connect");
 
       const response = await Wallet.request("getAccounts", {
@@ -27,12 +26,14 @@ class BitcoinService {
       } else {
         throw new Error(response.error.message);
       }
-    } catch (error) {
-      throw new Error(`Failed to connect wallet: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      throw new Error(`Failed to connect wallet: ${errorMessage}`);
     }
   }
 
-  async getBalance(address: string): Promise<string> {
+  async getBalance(): Promise<string> {
     try {
       const { default: Wallet } = await import("sats-connect");
       const response = await Wallet.request("getBalance", undefined);
@@ -41,8 +42,10 @@ class BitcoinService {
         return (Number(response.result.total) / 100000000).toString();
       }
       throw new Error("Failed to fetch balance");
-    } catch (error) {
-      throw new Error(`Failed to get balance: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      throw new Error(`Failed to get balance: ${errorMessage}`);
     }
   }
 
@@ -69,8 +72,10 @@ class BitcoinService {
         return response.result.txid;
       }
       throw new Error("Failed to send Bitcoin");
-    } catch (error) {
-      throw new Error(`Failed to send Bitcoin: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      throw new Error(`Failed to send Bitcoin: ${errorMessage}`);
     }
   }
 
@@ -86,8 +91,10 @@ class BitcoinService {
         return response.result.signature;
       }
       throw new Error("Failed to sign message");
-    } catch (error) {
-      throw new Error(`Failed to sign message: ${error.message}`);
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Unknown error";
+      throw new Error(`Failed to sign message: ${errorMessage}`);
     }
   }
 }

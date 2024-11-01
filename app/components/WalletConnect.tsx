@@ -1,62 +1,88 @@
+import * as React from "react";
 import { useWalletStore } from "../store/useWalletStore";
-import { BlockchainType } from "../types/wallet";
 
 interface WalletConnectProps {
-  blockchain: BlockchainType;
+  type: "bitcoin" | "stacks" | "solana";
+  isConnected: boolean;
+  className?: string;
+  icon: string;
 }
 
-export const WalletConnect = ({
-  blockchain,
-}: WalletConnectProps): JSX.Element => {
-  const {
-    [blockchain]: walletState,
-    connectWallet,
-    disconnectWallet,
-  } = useWalletStore();
+export const WalletConnect: React.FC<WalletConnectProps> = ({
+  type,
+  isConnected,
+  className,
+  icon,
+}) => {
+  const { connectWallet, disconnectWallet } = useWalletStore();
 
   const handleConnect = async () => {
-    await connectWallet(blockchain);
+    try {
+      await connectWallet(type);
+    } catch (error) {
+      console.error(`Failed to connect ${type} wallet:`, error);
+    }
   };
 
-  const handleDisconnect = () => {
-    disconnectWallet(blockchain);
+  const handleDisconnect = async () => {
+    try {
+      await disconnectWallet(type);
+    } catch (error) {
+      console.error(`Failed to disconnect ${type} wallet:`, error);
+    }
   };
 
   return (
-    <div className="p-4 rounded-lg bg-white shadow-sm">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold capitalize">{blockchain}</h2>
-        <button
-          onClick={walletState.isConnected ? handleDisconnect : handleConnect}
-          className={`px-4 py-2 rounded-md font-medium transition-colors ${
-            walletState.isConnected
-              ? "bg-red-500 hover:bg-red-600 text-white"
-              : "bg-blue-500 hover:bg-blue-600 text-white"
-          }`}
-          aria-label={`${
-            walletState.isConnected ? "Disconnect" : "Connect"
-          } ${blockchain} wallet`}
-        >
-          {walletState.isConnected ? "Disconnect" : "Connect"}
-        </button>
+    <div
+      className={`
+        relative rounded-2xl p-8 transition-all duration-300 hover:scale-[1.02]
+        border border-white/10 shadow-lg
+        ${className}
+      `}
+    >
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center space-x-4">
+          <div className="p-3 bg-white/10 rounded-xl">
+            <img
+              src={`/icons/${icon}.svg`}
+              alt={`${type} icon`}
+              className="w-8 h-8"
+            />
+          </div>
+          <h3 className="text-2xl font-semibold capitalize">{type}</h3>
+        </div>
+        <div className="flex items-center space-x-2">
+          <span
+            className={`
+            text-sm ${isConnected ? "text-green-400" : "text-gray-400"}
+          `}
+          >
+            {isConnected ? "Connected" : "Not Connected"}
+          </span>
+          <div
+            className={`
+              h-3 w-3 rounded-full
+              ${isConnected ? "bg-green-400" : "bg-gray-400"}
+            `}
+          />
+        </div>
       </div>
 
-      {walletState.isConnected && (
-        <div className="mt-4">
-          <p className="text-sm text-gray-600">
-            Address: {walletState.address}
-          </p>
-          {walletState.balance && (
-            <p className="text-sm text-gray-600">
-              Balance: {walletState.balance} {blockchain.toUpperCase()}
-            </p>
-          )}
-        </div>
-      )}
-
-      {walletState.error && (
-        <p className="mt-2 text-sm text-red-500">{walletState.error}</p>
-      )}
+      <button
+        onClick={isConnected ? handleDisconnect : handleConnect}
+        className={`
+          w-full py-3 px-6 rounded-xl font-medium transition-all duration-300
+          flex items-center justify-center space-x-2
+          ${
+            isConnected
+              ? "bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20"
+              : "bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20"
+          }
+        `}
+        aria-label={`${isConnected ? "Disconnect" : "Connect"} ${type} wallet`}
+      >
+        <span>{isConnected ? "Disconnect" : "Connect"} Wallet</span>
+      </button>
     </div>
   );
 };

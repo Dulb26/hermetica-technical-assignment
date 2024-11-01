@@ -1,41 +1,11 @@
-import { Box, BoxProps } from "@mui/joy";
-import { Fragment, Suspense } from "react";
-import { ColorSchemeButton } from "./ColorSchemeButton";
+import { Logo } from "./Logo";
 
-export function Toolbar(props: ToolbarProps): JSX.Element {
-  const { sx, ...other } = props;
-
+export function Toolbar() {
   return (
-    <Box
-      sx={{
-        alignItems: "center",
-        borderBottom: "1px solid",
-        borderColor: "divider",
-        display: "flex",
-        gap: 1,
-        px: 2,
-        ...sx,
-      }}
-      component="header"
-      {...other}
-    >
-      <Box sx={{ flexGrow: 1 }} component="span" />
-
-      <Suspense>
-        <ActionButtons />
-      </Suspense>
-    </Box>
+    <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white shadow-sm">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <Logo />
+      </div>
+    </header>
   );
 }
-
-function ActionButtons(): JSX.Element {
-  // const user = useCurrentUser();
-
-  return (
-    <Fragment>
-      <ColorSchemeButton variant="soft" size="sm" />
-    </Fragment>
-  );
-}
-
-type ToolbarProps = Omit<BoxProps<"header">, "children">;

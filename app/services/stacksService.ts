@@ -1,9 +1,7 @@
 import { AppConfig, showConnect, UserSession } from "@stacks/connect";
-import { StacksMainnet } from "@stacks/network";
 
 const appConfig = new AppConfig(["store_write", "publish_data"]);
 const userSession = new UserSession({ appConfig });
-const network = new StacksMainnet();
 
 export const stacksService = {
   connect: async () => {

@@ -1,7 +1,13 @@
 import { create } from "zustand";
 import bitcoinService from "../services/bitcoinService";
+import { solanaService } from "../services/solanaService";
 import { stacksService } from "../services/stacksService";
 import { BlockchainType, WalletStore } from "../types/wallet";
+
+interface ServiceResponse {
+  address: string;
+  balance?: string;
+}
 
 export const useWalletStore = create<WalletStore>((set) => ({
   bitcoin: {
@@ -24,50 +30,36 @@ export const useWalletStore = create<WalletStore>((set) => ({
   },
   connectWallet: async (blockchain: BlockchainType) => {
     try {
+      let response: ServiceResponse;
+
       if (blockchain === "stacks") {
-        const { address } = await stacksService.connect();
-        const balance = await stacksService.getBalance(address);
-
-        set((state) => ({
-          stacks: {
-            ...state.stacks,
-            isConnected: true,
-            address,
-            balance,
-            error: null,
-          },
-        }));
+        response = (await stacksService.connect()) as ServiceResponse;
+        const balance = await stacksService.getBalance(response.address);
+        response.balance = balance;
       } else if (blockchain === "bitcoin") {
-        const { address } = await bitcoinService.connect();
-        let balance = "0";
-
+        response = await bitcoinService.connect();
         try {
-          balance = await bitcoinService.getBalance(address);
+          response.balance = await bitcoinService.getBalance();
         } catch (error) {
           console.warn("Failed to fetch balance:", error);
         }
-
-        set((state) => ({
-          bitcoin: {
-            ...state.bitcoin,
-            isConnected: true,
-            address,
-            balance,
-            error: null,
-          },
-        }));
+      } else if (blockchain === "solana") {
+        const result = await solanaService.connect();
+        if (!result) throw new Error("Failed to connect Solana wallet");
+        response = result;
       } else {
-        // Implement wallet connection logic here
-        set((state) => ({
-          [blockchain]: {
-            ...state[blockchain],
-            isConnected: true,
-            address: "0x123...", // Replace with actual address
-            balance: "0.0",
-            error: null,
-          },
-        }));
+        throw new Error("Unsupported blockchain");
       }
+
+      set((state) => ({
+        [blockchain]: {
+          ...state[blockchain],
+          isConnected: true,
+          address: response.address,
+          balance: response.balance ?? null,
+          error: null,
+        },
+      }));
     } catch (error) {
       set((state) => ({
         [blockchain]: {
@@ -77,22 +69,43 @@ export const useWalletStore = create<WalletStore>((set) => ({
       }));
     }
   },
-  disconnectWallet: (blockchain) => {
-    if (blockchain === "stacks") {
-      stacksService.disconnect();
-    } else if (blockchain === "bitcoin") {
-      bitcoinService.disconnect();
-    }
+  disconnectWallet: async (blockchain: BlockchainType) => {
+    try {
+      if (blockchain === "stacks") {
+        stacksService.disconnect();
+      } else if (blockchain === "bitcoin") {
+        bitcoinService.disconnect();
+      } else if (blockchain === "solana") {
+        await solanaService.disconnect();
+      }
 
-    set((state) => ({
-      [blockchain]: {
-        ...state[blockchain],
-        isConnected: false,
-        address: null,
-        balance: null,
-        error: null,
-      },
-    }));
+      set((state) => ({
+        [blockchain]: {
+          ...state[blockchain],
+          isConnected: false,
+          address: null,
+          balance: null,
+          error: null,
+        },
+      }));
+    } catch (error) {
+      set((state) => ({
+        [blockchain]: {
+          ...state[blockchain],
+          error:
+            error instanceof Error ? error.message : "Disconnection failed",
+        },
+      }));
+    }
+  },
+  transferBitcoin: async (address: string, amount: number) => {
+    try {
+      // Implement Bitcoin transfer logic here
+      console.log("Bitcoin transfer not implemented: ", address, amount);
+      throw new Error("Bitcoin transfer not implemented");
+    } catch (error) {
+      throw error instanceof Error ? error : new Error("Transfer failed");
+    }
   },
   setError: (blockchain, error) => {
     set((state) => ({

@@ -1,12 +1,24 @@
-import React from "react";
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { Dashboard } from "./routes/dashboard";
+import * as React from "react";
+import {
+  Navigate,
+  Route,
+  BrowserRouter as Router,
+  Routes,
+} from "react-router-dom";
+import { BaseLayout, MainLayout } from "./components";
+import Dashboard from "./routes/dashboard";
 
 const App: React.FC = () => {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<Dashboard />} />
+        <Route element={<BaseLayout />}>
+          {/* Add any base layout routes here */}
+        </Route>
+        <Route element={<MainLayout />}>
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+        </Route>
       </Routes>
     </Router>
   );

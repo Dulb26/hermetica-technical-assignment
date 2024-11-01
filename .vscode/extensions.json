@@ -5,7 +5,6 @@
     "eamodio.gitlens",
     "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
-    "github.copilot",
     "github.vscode-github-actions",
     "graphql.vscode-graphql",
     "mikestead.dotenv",
