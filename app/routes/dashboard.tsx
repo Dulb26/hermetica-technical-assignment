@@ -33,18 +33,24 @@ const Dashboard = () => {
             isConnected={bitcoinWallet.isConnected}
             className="bg-gradient-to-br from-orange-500/10 to-yellow-500/5 backdrop-blur-sm"
             icon="bitcoin-icon"
+            balance={bitcoinWallet.balance ?? undefined}
+            address={bitcoinWallet.address ?? undefined}
           />
           <WalletConnect
             type="stacks"
             isConnected={stacksWallet.isConnected}
             className="bg-gradient-to-br from-purple-500/10 to-indigo-500/5 backdrop-blur-sm"
             icon="stacks-icon"
+            balance={stacksWallet.balance ?? undefined}
+            address={stacksWallet.address ?? undefined}
           />
           <WalletConnect
             type="solana"
             isConnected={solanaWallet.isConnected}
             className="bg-gradient-to-br from-green-500/10 to-emerald-500/5 backdrop-blur-sm"
             icon="solana-icon"
+            balance={solanaWallet.balance ?? undefined}
+            address={solanaWallet.address ?? undefined}
           />
         </div>
 

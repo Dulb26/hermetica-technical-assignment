@@ -6,6 +6,8 @@ interface WalletConnectProps {
   isConnected: boolean;
   className?: string;
   icon: string;
+  balance?: string;
+  address?: string;
 }
 
 export const WalletConnect: React.FC<WalletConnectProps> = ({
@@ -13,6 +15,8 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   isConnected,
   className,
   icon,
+  balance = "0",
+  address = "",
 }) => {
   const { connectWallet, disconnectWallet } = useWalletStore();
 
@@ -30,6 +34,11 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
     } catch (error) {
       console.error(`Failed to disconnect ${type} wallet:`, error);
     }
+  };
+
+  const truncateAddress = (addr: string) => {
+    if (!addr) return "";
+    return `${addr.slice(0, 3)}...${addr.slice(-3)}`;
   };
 
   return (
@@ -67,6 +76,21 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
           />
         </div>
       </div>
+
+      {isConnected && (
+        <div className="mb-6 space-y-2">
+          <div className="flex items-center justify-between text-gray-400">
+            <span className="text-sm">Balance:</span>
+            <span className="text-white font-medium">{balance}</span>
+          </div>
+          <div className="flex items-center justify-between text-gray-400">
+            <span className="text-sm">Address:</span>
+            <span className="text-white font-medium">
+              {truncateAddress(address)}
+            </span>
+          </div>
+        </div>
+      )}
 
       <button
         onClick={isConnected ? handleDisconnect : handleConnect}

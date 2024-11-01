@@ -98,11 +98,23 @@ export const useWalletStore = create<WalletStore>((set) => ({
       }));
     }
   },
-  transferBitcoin: async (address: string, amount: number) => {
+  transfer: async (
+    blockchain: BlockchainType,
+    address: string,
+    amount: number,
+  ) => {
     try {
-      // Implement Bitcoin transfer logic here
-      console.log("Bitcoin transfer not implemented: ", address, amount);
-      throw new Error("Bitcoin transfer not implemented");
+      switch (blockchain) {
+        case "bitcoin":
+          await bitcoinService.sendBitcoin(address, amount);
+          break;
+        case "stacks":
+          throw new Error("Stacks transfer not implemented");
+        case "solana":
+          throw new Error("Solana transfer not implemented");
+        default:
+          throw new Error(`Unsupported blockchain: ${blockchain}`);
+      }
     } catch (error) {
       throw error instanceof Error ? error : new Error("Transfer failed");
     }

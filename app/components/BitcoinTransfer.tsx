@@ -6,7 +6,7 @@ export const BitcoinTransfer: React.FC = () => {
   const [amount, setAmount] = useState("");
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { transferBitcoin } = useWalletStore();
+  const { transfer } = useWalletStore();
 
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,7 +14,16 @@ export const BitcoinTransfer: React.FC = () => {
 
     setIsLoading(true);
     try {
-      await transferBitcoin(address, parseFloat(amount));
+      // Validate Bitcoin address format
+      const bitcoinAddressRegex = /^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/;
+      if (!bitcoinAddressRegex.test(address)) {
+        throw new Error("Invalid Bitcoin address format");
+      }
+      await transfer(
+        "bitcoin",
+        address,
+        Math.floor(parseFloat(amount) * 100000000),
+      );
       setAmount("");
       setAddress("");
     } catch (error) {
@@ -38,7 +47,10 @@ export const BitcoinTransfer: React.FC = () => {
             id="amount"
             type="number"
             value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            onChange={(e) => {
+              const value = Number(e.target.value).toFixed(8);
+              setAmount(value);
+            }}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white
                      focus:ring-2 focus:ring-blue-500 focus:border-transparent
                      placeholder-gray-500 transition-all duration-200"

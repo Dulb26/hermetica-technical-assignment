@@ -15,7 +15,11 @@ export interface WalletStore {
   disconnectWallet: (blockchain: BlockchainType) => void;
   setError: (blockchain: BlockchainType, error: string) => void;
   clearError: (blockchain: BlockchainType) => void;
-  transferBitcoin: (address: string, amount: number) => Promise<void>;
+  transfer: (
+    blockchain: BlockchainType,
+    address: string,
+    amount: number,
+  ) => Promise<void>;
 }
 
 export interface BitcoinTransfer {
