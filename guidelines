@@ -1,0 +1,66 @@
+Technical Assignment: Blockchain Connection and Transfer App with Tailwind CSS
+Instructions
+You have a few days to complete the following assignment.
+If you need to make additional assumptions that are not specified in this document, please outline any assumptions you made.
+Once done, we’ll have a 30-60 minute call to discuss your implementation, design decisions, and any challenges you encountered.
+Please send your completed assignment to us via email 24 hours before the call is scheduled to take place.
+Scenario
+You are tasked to create a responsive web application using React, Typescript and Tailwind CSS that allows users to connect to multiple blockchains (Bitcoin, Stacks, and Solana) simultaneously using either the same or different wallet accounts. The app should also feature a transfer component for Bitcoin, allowing users to send BTC using connected wallets. The assignment includes basic unit testing for key components of the application
+
+Frontend with React and Typescript
+Design a set of components that meet the requirements using:
+Typescript as a declarative language.
+React as a framework to create functional or class based components.
+
+Responsive Frontend with Tailwind CSS
+Design the application to be fully responsive using Tailwind CSS.
+Provide clear and organized structure, using Tailwind utility classes for styling.
+Aim for a clean, user-friendly UI.
+
+Multi-Blockchain Wallet Connection
+Implement the ability for a user to connect to Bitcoin, Stacks, and Solana blockchains.
+Users should be able to:
+Connect to each blockchain individually.
+Maintain active sessions on multiple blockchains simultaneously (e.g., connect to Bitcoin and Solana without ending the session on Stacks).
+Allow the user to use either the same or different wallets for each blockchain.
+
+Transfer Component
+Create a Bitcoin transfer component that includes:
+Amount Input: An input field for the user to specify the amount of BTC to send.
+Destination Address Input: An input field for the recipient’s Bitcoin address.
+Implement basic validation for both inputs:
+Ensure the amount is a valid number greater than zero.
+Validate that the destination address meets basic Bitcoin address format criteria.
+Ensure compatibility with the connected wallet to initiate and confirm the transfer.
+
+State Management
+Use a suitable state management approach to track:
+Active blockchain connections and wallet states.
+User interactions and any error messages related to connection or transfer processes.
+
+Basic Unit Testing
+Write unit tests covering the following:
+Wallet connection functionality for each blockchain.
+Transfer component functionality, ensuring it:
+Accepts valid input.
+Throws errors for invalid input.
+Confirms successful transfer initiation.
+Test cases should include at least:
+Successful wallet connection for each blockchain.
+Simultaneous multi-blockchain connections.
+Validation logic for the transfer component inputs.
+
+Deliverables
+Codebase as Github repo
+Complete the codebase following best practices and structured file organization.
+Include a README with setup instructions and any additional notes.
+Share Github repo link with @anch09 24 hours before review call
+Testing Report
+Provide a summary of the unit tests performed, their coverage, and any additional notes on test cases.
+
+Bonus Points
+Implement error handling for network or wallet connectivity issues with descriptive error messages.
+Add hover effects and smooth transitions for UI elements to improve user experience.
+Use a state management library (e.g., Zustand, Redux) to handle global state if the app structure becomes complex.
+
+This assignment evaluates your knowledge of responsive design, blockchain integration, and basic testing practices. Good luck!
