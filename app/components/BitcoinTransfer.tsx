@@ -14,7 +14,12 @@ export const BitcoinTransfer: React.FC = () => {
 
     setIsLoading(true);
     try {
-      // Validate Bitcoin address format
+      const amountInSats = Math.floor(parseFloat(amount) * 100000000);
+      if (amountInSats < 1500) {
+        throw new Error(
+          "Amount must be at least 1500 satoshis (0.00001500 BTC)",
+        );
+      }
       const bitcoinAddressRegex = /^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/;
       if (!bitcoinAddressRegex.test(address)) {
         throw new Error("Invalid Bitcoin address format");
