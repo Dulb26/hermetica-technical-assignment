@@ -2,6 +2,7 @@ import * as React from "react";
 import { useState } from "react";
 import { useWalletStore } from "../store/useWalletStore";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import toast from "react-hot-toast";
 
 export const BitcoinTransfer: React.FC = () => {
   const [amount, setAmount] = useState("");
@@ -30,10 +31,16 @@ export const BitcoinTransfer: React.FC = () => {
         address,
         Math.floor(parseFloat(amount) * 100000000),
       );
+      toast.success("Transfer completed successfully!");
       setAmount("");
       setAddress("");
     } catch (error) {
       console.error("Transfer failed:", error);
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : "Transfer failed. Please try again.",
+      );
     } finally {
       setIsLoading(false);
     }

@@ -7,10 +7,33 @@ import {
 } from "react-router-dom";
 import { BaseLayout, MainLayout } from "./components";
 import Dashboard from "./routes/dashboard";
+import { Toaster } from "react-hot-toast";
 
 const App: React.FC = () => {
   return (
     <Router>
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: "#1F2937",
+            color: "white",
+          },
+          success: {
+            iconTheme: {
+              primary: "rgb(34 197 94)",
+              secondary: "white",
+            },
+          },
+          error: {
+            iconTheme: {
+              primary: "rgb(239 68 68)",
+              secondary: "white",
+            },
+          },
+        }}
+      />
       <Routes>
         <Route element={<BaseLayout />}>
           {/* Add any base layout routes here */}

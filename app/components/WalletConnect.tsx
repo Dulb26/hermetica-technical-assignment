@@ -1,6 +1,7 @@
 import * as React from "react";
 import { useWalletStore } from "../store/useWalletStore";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import toast from "react-hot-toast";
 
 interface WalletConnectProps {
   type: "bitcoin" | "stacks" | "solana";
@@ -24,16 +25,20 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   const handleConnect = async () => {
     try {
       await connectWallet(type);
+      toast.success(`Successfully connected ${type} wallet`);
     } catch (error) {
       console.error(`Failed to connect ${type} wallet:`, error);
+      toast.error(`Failed to connect ${type} wallet. Please try again.`);
     }
   };
 
   const handleDisconnect = async () => {
     try {
       await disconnectWallet(type);
+      toast.success(`Successfully disconnected ${type} wallet`);
     } catch (error) {
       console.error(`Failed to disconnect ${type} wallet:`, error);
+      toast.error(`Failed to disconnect ${type} wallet. Please try again.`);
     }
   };
 
