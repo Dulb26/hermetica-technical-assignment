@@ -42,7 +42,7 @@ module.exports = {
       },
     },
     {
-      files: [".eslintrc.cjs", "*/vite.config.ts", "scripts/**/*.js"],
+      files: [".eslintrc.cjs", "*/vite.config.ts"],
       env: { node: true },
     },
     {
@@ -63,11 +63,7 @@ module.exports = {
   settings: {
     "import/resolver": {
       typescript: {
-        project: [
-          "app/tsconfig.json",
-          "edge/tsconfig.json",
-          "scripts/tsconfig.json",
-        ],
+        project: ["app/tsconfig.json"],
       },
     },
     "import/core-modules": ["__STATIC_CONTENT_MANIFEST"],

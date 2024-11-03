@@ -1,26 +1,24 @@
-import * as React from "react";
-import { useWalletStore } from "../store/useWalletStore";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import * as React from "react";
 import toast from "react-hot-toast";
+import { useWalletStore } from "../store/useWalletStore";
 
 interface WalletConnectProps {
   type: "bitcoin" | "stacks" | "solana";
-  isConnected: boolean;
   className?: string;
   icon: string;
-  balance?: string;
-  address?: string;
 }
 
 export const WalletConnect: React.FC<WalletConnectProps> = ({
   type,
-  isConnected,
   className,
   icon,
-  balance = "0",
-  address = "",
 }) => {
   const { connectWallet, disconnectWallet } = useWalletStore();
+  const walletState = useWalletStore((state) => state[type]);
+  const isConnected = walletState.isConnected;
+  const address = walletState.address || "";
+  const balance = walletState.balance || "0";
 
   const handleConnect = async () => {
     try {
@@ -55,6 +53,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
           border border-white/10 shadow-lg
           ${className}
         `}
+        data-testid={`${type}-wallet-container`}
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center space-x-4">
@@ -85,7 +84,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
         </div>
 
         {isConnected && (
-          <div className="mb-6 space-y-2">
+          <div className="mb-6 space-y-2" data-testid={`${type}-wallet-info`}>
             <div className="flex items-center justify-between text-gray-400">
               <span className="text-sm">Balance:</span>
               <Tooltip.Root>
@@ -130,6 +129,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
         <Tooltip.Root>
           <Tooltip.Trigger asChild>
             <button
+              data-testid={`${type}-connect-button`}
               onClick={isConnected ? handleDisconnect : handleConnect}
               className={`
                 w-full py-3 px-6 rounded-xl font-medium transition-all duration-300

@@ -1,14 +1,56 @@
+import * as Tooltip from "@radix-ui/react-tooltip";
 import * as React from "react";
 import { useState } from "react";
-import { useWalletStore } from "../store/useWalletStore";
-import * as Tooltip from "@radix-ui/react-tooltip";
 import toast from "react-hot-toast";
+import { useWalletStore } from "../store/useWalletStore";
 
 export const BitcoinTransfer: React.FC = () => {
   const [amount, setAmount] = useState("");
   const [address, setAddress] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { transfer } = useWalletStore();
+
+  const validateAmount = (value: string) => {
+    const amountInSats = Math.floor(parseFloat(value) * 100000000);
+    if (amountInSats < 1500) {
+      toast.error("Amount must be at least 1500 satoshis (0.00001500 BTC)");
+      return false;
+    }
+    return true;
+  };
+
+  const handleAmountBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value) {
+      validateAmount(value);
+    }
+  };
+
+  const handleAmountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = Number(e.target.value).toFixed(8);
+    setAmount(value);
+  };
+
+  const validateBitcoinAddress = (address: string) => {
+    const bitcoinAddressRegex = /^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/;
+    if (!bitcoinAddressRegex.test(address)) {
+      toast.error("Invalid Bitcoin address format");
+      return false;
+    }
+    return true;
+  };
+
+  const handleAddressBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (value) {
+      validateBitcoinAddress(value);
+    }
+  };
+
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newAddress = e.target.value;
+    setAddress(newAddress);
+  };
 
   const handleTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,15 +64,10 @@ export const BitcoinTransfer: React.FC = () => {
           "Amount must be at least 1500 satoshis (0.00001500 BTC)",
         );
       }
-      const bitcoinAddressRegex = /^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,39}$/;
-      if (!bitcoinAddressRegex.test(address)) {
-        throw new Error("Invalid Bitcoin address format");
+      if (!validateBitcoinAddress(address)) {
+        return;
       }
-      await transfer(
-        "bitcoin",
-        address,
-        Math.floor(parseFloat(amount) * 100000000),
-      );
+      await transfer("bitcoin", address, amountInSats);
       toast.success("Transfer completed successfully!");
       setAmount("");
       setAddress("");
@@ -47,7 +84,7 @@ export const BitcoinTransfer: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleTransfer} className="space-y-8">
+    <form role="form" className="space-y-8" onSubmit={handleTransfer}>
       <div className="space-y-6">
         <div>
           <label
@@ -60,10 +97,8 @@ export const BitcoinTransfer: React.FC = () => {
             id="amount"
             type="number"
             value={amount}
-            onChange={(e) => {
-              const value = Number(e.target.value).toFixed(8);
-              setAmount(value);
-            }}
+            onChange={handleAmountChange}
+            onBlur={handleAmountBlur}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white
                      focus:ring-2 focus:ring-blue-500 focus:border-transparent
                      placeholder-gray-500 transition-all duration-200"
@@ -71,6 +106,7 @@ export const BitcoinTransfer: React.FC = () => {
             step="0.00000001"
             min="0"
             required
+            data-testid="amount-input"
           />
         </div>
 
@@ -85,12 +121,14 @@ export const BitcoinTransfer: React.FC = () => {
             id="address"
             type="text"
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={handleAddressChange}
+            onBlur={handleAddressBlur}
             className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white
                      focus:ring-2 focus:ring-blue-500 focus:border-transparent
                      placeholder-gray-500 transition-all duration-200"
             placeholder="Enter Bitcoin address"
             required
+            data-testid="recipient-address-input"
           />
         </div>
       </div>
