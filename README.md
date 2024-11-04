@@ -34,8 +34,8 @@ A responsive web application built with React, TypeScript, and Tailwind CSS that
 - Node.js (v18+)
 - npm or yarn
 - Supported Wallet Extensions:
-  - Bitcoin: Xverse, Hiro
-  - Stacks: Hiro Wallet
+  - Bitcoin: Xverse, Hiro Wallet
+  - Stacks: Xverse, Hiro Wallet
   - Solana: Solflare
 
 ## Quick Start
@@ -115,15 +115,12 @@ Using Zustand for managing:
 
 - Active blockchain connections
 - Wallet states per blockchain
-- Transfer component state
-- Error messages and notifications
+- Error messages
 
 ## Error Handling
 
-- Network connectivity issues
 - Wallet connection failures
 - Invalid transfer inputs
-- Transaction failures
 - Clear user feedback messages
 
 ## Contributing
@@ -146,5 +143,5 @@ MIT License - see [LICENSE](LICENSE)
 
 ## Contact
 
-Your Name - [@dulb26](https://twitter.com/dulb26)
+Gustavo Esteves de Andrade - [@dulb26](https://twitter.com/dulb26)
 Project Link: [https://github.com/Dulb26/hermetica-technical-assignment]
