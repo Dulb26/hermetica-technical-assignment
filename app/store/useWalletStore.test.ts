@@ -1,10 +1,17 @@
 import { beforeEach, describe, expect, it } from "vitest";
+import { WalletState, WalletStore } from "../types/wallet";
 import { useWalletStore } from "./useWalletStore";
 
 describe("Store", () => {
   beforeEach(() => {
     useWalletStore.setState({
       bitcoin: {
+        address: null,
+        balance: null,
+        error: null,
+        isConnected: false,
+      },
+      solana: {
         address: null,
         balance: null,
         error: null,
@@ -19,55 +26,140 @@ describe("Store", () => {
     });
   });
 
-  it("updates bitcoin wallet state", () => {
-    const mockWallet = { address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" };
-
-    useWalletStore.getState().bitcoin.address = mockWallet.address;
-
-    expect(useWalletStore.getState().bitcoin.address).toEqual(
-      mockWallet.address,
-    );
-  });
-
-  it("handles multiple wallet connections", () => {
-    const mockBitcoinWallet = { address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" };
-    const mockSolanaWallet = {
-      address: "DRpbCBMxVnDK7maPGv7vLGKGtZsC4J2qpDQA7zvDDxZE",
+  // Test all wallet types
+  describe("wallet state management", () => {
+    const mockWallets = {
+      bitcoin: {
+        address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        balance: "1.23456789",
+      },
+      solana: {
+        address: "DRpbCBMxVnDK7maPGv7vLGKGtZsC4J2qpDQA7zvDDxZE",
+        balance: "2.34567891",
+      },
+      stacks: {
+        address: "SP2J6ZY48GV1EZ5V2V5RB9MP66SW86PYKKNRV9EJ7",
+        balance: "3.45678912",
+      },
     };
 
-    useWalletStore.getState().bitcoin.address = mockBitcoinWallet.address;
-    useWalletStore.getState().solana.address = mockSolanaWallet.address;
+    it("updates wallet addresses", () => {
+      // Test all wallet types
+      Object.entries(mockWallets).forEach(([wallet, data]) => {
+        const state = useWalletStore.getState();
+        const walletState = state[wallet as keyof WalletStore] as WalletState;
+        walletState.address = data.address;
+        expect(walletState.address).toEqual(data.address);
+      });
+    });
 
-    expect(useWalletStore.getState().bitcoin.address).toEqual(
-      mockBitcoinWallet.address,
-    );
-    expect(useWalletStore.getState().solana.address).toEqual(
-      mockSolanaWallet.address,
-    );
+    it("updates wallet balances", () => {
+      // Test all wallet types
+      Object.entries(mockWallets).forEach(([wallet, data]) => {
+        const state = useWalletStore.getState();
+        const walletState = state[wallet as keyof WalletStore] as WalletState;
+        walletState.balance = data.balance;
+        expect(walletState.balance).toEqual(data.balance);
+      });
+    });
+
+    it("handles connection states", () => {
+      // Test all wallet types
+      Object.keys(mockWallets).forEach((wallet) => {
+        const state = useWalletStore.getState();
+        const walletState = state[wallet as keyof WalletStore] as WalletState;
+        walletState.isConnected = true;
+        expect(walletState.isConnected).toBe(true);
+
+        walletState.isConnected = false;
+        expect(walletState.isConnected).toBe(false);
+      });
+    });
+
+    it("handles error states", () => {
+      const errorMessage = "Connection failed";
+      // Test all wallet types
+      Object.keys(mockWallets).forEach((wallet) => {
+        const state = useWalletStore.getState();
+        const walletState = state[wallet as keyof WalletStore] as WalletState;
+        walletState.error = errorMessage;
+        expect(walletState.error).toBe(errorMessage);
+
+        walletState.error = null;
+        expect(walletState.error).toBeNull();
+      });
+    });
   });
 
-  it("clears wallet state on disconnect", () => {
-    const mockWallet = { address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa" };
+  describe("complete wallet lifecycle", () => {
+    it("handles full wallet connection and disconnection cycle", () => {
+      const wallet = "bitcoin";
+      const mockData = {
+        address: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
+        balance: "1.23456789",
+      };
 
-    useWalletStore.getState().bitcoin.address = mockWallet.address;
-    useWalletStore.getState().bitcoin.address = null;
+      // Connect
+      const state = useWalletStore.getState();
+      const walletState = state[wallet as keyof WalletStore] as WalletState;
+      walletState.isConnected = true;
+      walletState.address = mockData.address;
+      walletState.balance = mockData.balance;
+      walletState.error = null;
 
-    expect(useWalletStore.getState().bitcoin.address).toBeNull();
+      // Verify connected state
+      expect(walletState.isConnected).toBe(true);
+      expect(walletState.address).toBe(mockData.address);
+      expect(walletState.balance).toBe(mockData.balance);
+      expect(walletState.error).toBeNull();
+
+      // Disconnect
+      walletState.isConnected = false;
+      walletState.address = null;
+      walletState.balance = null;
+
+      // Verify disconnected state
+      expect(walletState.isConnected).toBe(false);
+      expect(walletState.address).toBeNull();
+      expect(walletState.balance).toBeNull();
+    });
   });
 
-  it("handles error states", () => {
-    const errorMessage = "Connection failed";
+  describe("multiple wallet interactions", () => {
+    it("maintains independent state for each wallet", () => {
+      // Connect Bitcoin
+      const state = useWalletStore.getState();
+      const bitcoinState = state.bitcoin as WalletState;
+      bitcoinState.isConnected = true;
+      bitcoinState.address = "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa";
+      bitcoinState.balance = "1.23456789";
 
-    useWalletStore.getState().bitcoin.error = errorMessage;
+      // Connect Solana
+      const solanaState = state.solana as WalletState;
+      solanaState.isConnected = true;
+      solanaState.address = "DRpbCBMxVnDK7maPGv7vLGKGtZsC4J2qpDQA7zvDDxZE";
+      solanaState.balance = "2.34567891";
 
-    expect(useWalletStore.getState().bitcoin.error).toBe(errorMessage);
-  });
+      // Verify both wallets
+      expect(bitcoinState.isConnected).toBe(true);
+      expect(solanaState.isConnected).toBe(true);
+      expect(bitcoinState.address).toBe("1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa");
+      expect(solanaState.address).toBe(
+        "DRpbCBMxVnDK7maPGv7vLGKGtZsC4J2qpDQA7zvDDxZE",
+      );
 
-  it("tracks connection state", () => {
-    useWalletStore.getState().bitcoin.isConnected = true;
-    expect(useWalletStore.getState().bitcoin.isConnected).toBe(true);
+      // Disconnect one wallet
+      bitcoinState.isConnected = false;
+      bitcoinState.address = null;
+      bitcoinState.balance = null;
 
-    useWalletStore.getState().bitcoin.isConnected = false;
-    expect(useWalletStore.getState().bitcoin.isConnected).toBe(false);
+      // Verify one wallet disconnected while other remains connected
+      expect(bitcoinState.isConnected).toBe(false);
+      expect(solanaState.isConnected).toBe(true);
+      expect(bitcoinState.address).toBeNull();
+      expect(solanaState.address).toBe(
+        "DRpbCBMxVnDK7maPGv7vLGKGtZsC4J2qpDQA7zvDDxZE",
+      );
+    });
   });
 });

@@ -2,8 +2,6 @@ import {
   Connection,
   LAMPORTS_PER_SOL,
   PublicKey,
-  SystemProgram,
-  Transaction,
   clusterApiUrl,
 } from "@solana/web3.js";
 import Solflare from "@solflare-wallet/sdk";
@@ -71,41 +69,6 @@ export const solanaService = {
       return (balance / LAMPORTS_PER_SOL).toFixed(6);
     } catch (error) {
       console.error("Error fetching SOL balance:", error);
-      throw error;
-    }
-  },
-
-  sendSol: async (fromAddress: string, toAddress: string, amount: number) => {
-    try {
-      if (!wallet.connected || !wallet.publicKey) {
-        throw new Error("Wallet is not connected");
-      }
-
-      const fromPubkey = new PublicKey(fromAddress);
-      const toPubkey = new PublicKey(toAddress);
-
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey,
-          toPubkey,
-          lamports: amount * LAMPORTS_PER_SOL,
-        }),
-      );
-
-      const { blockhash } = await connection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = fromPubkey;
-
-      // Sign and send transaction using the SDK
-      const signedTx = await wallet.signTransaction(transaction);
-      const signature = await connection.sendRawTransaction(
-        signedTx.serialize(),
-      );
-      await connection.confirmTransaction(signature);
-
-      return signature;
-    } catch (error) {
-      console.error("Error sending SOL:", error);
       throw error;
     }
   },

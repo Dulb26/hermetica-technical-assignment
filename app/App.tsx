@@ -1,13 +1,13 @@
 import * as React from "react";
+import { Toaster } from "react-hot-toast";
 import {
   Navigate,
   Route,
   BrowserRouter as Router,
   Routes,
 } from "react-router-dom";
-import { BaseLayout, MainLayout } from "./components";
+import { MainLayout } from "./components";
 import Dashboard from "./routes/dashboard";
-import { Toaster } from "react-hot-toast";
 
 const App: React.FC = () => {
   return (
@@ -35,9 +35,6 @@ const App: React.FC = () => {
         }}
       />
       <Routes>
-        <Route element={<BaseLayout />}>
-          {/* Add any base layout routes here */}
-        </Route>
         <Route element={<MainLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />

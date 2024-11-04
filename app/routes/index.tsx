@@ -3,14 +3,25 @@ import {
   Navigate,
   RouterProvider,
   createBrowserRouter,
+  useRouteError,
 } from "react-router-dom";
-import { BaseLayout, MainLayout, RootError } from "../components";
+import { BaseLayout, MainLayout } from "../components";
 
 const Dashboard = lazy(() =>
   import("./dashboard").then((module) => ({
     default: module.default as React.ComponentType,
   })),
 );
+
+const RootError = () => {
+  const error = useRouteError();
+  return (
+    <div className="p-4">
+      <h1 className="text-xl font-bold">Oops!</h1>
+      <p className="mt-2">{error?.toString?.() ?? "Something went wrong"}</p>
+    </div>
+  );
+};
 
 /**
  * Application routes
