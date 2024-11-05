@@ -31,6 +31,7 @@
     "@stacks/network": "^6.10.0",
     "@stacks/transactions": "^6.17.0",
     "assert": "^2.1.0",
+    "bitcoinjs-lib": "^7.0.0-rc.0",
     "buffer": "^6.0.3",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.0",

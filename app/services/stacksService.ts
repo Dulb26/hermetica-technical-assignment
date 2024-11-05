@@ -8,7 +8,7 @@ export const stacksService = {
     return new Promise((resolve, reject) => {
       showConnect({
         appDetails: {
-          name: "Your App Name",
+          name: "Hermetica Technical Assignment",
           icon: window.location.origin + "/logo.png",
         },
         redirectTo: "/",
