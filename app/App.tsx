@@ -1,17 +1,10 @@
 import * as React from "react";
 import { Toaster } from "react-hot-toast";
-import {
-  Navigate,
-  Route,
-  BrowserRouter as Router,
-  Routes,
-} from "react-router-dom";
-import { MainLayout } from "./components";
-import Dashboard from "./routes/dashboard";
+import { Router } from "./routes";
 
 const App: React.FC = () => {
   return (
-    <Router>
+    <>
       <Toaster
         position="top-right"
         toastOptions={{
@@ -34,13 +27,8 @@ const App: React.FC = () => {
           },
         }}
       />
-      <Routes>
-        <Route element={<MainLayout />}>
-          <Route index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-        </Route>
-      </Routes>
-    </Router>
+      <Router />
+    </>
   );
 };
 
