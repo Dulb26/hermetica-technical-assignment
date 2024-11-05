@@ -8,6 +8,7 @@ export class SatsConnectWallet implements BitcoinWalletProvider {
     if (!this.Wallet) {
       const { default: Wallet } = await import("sats-connect");
       this.Wallet = Wallet;
+      console.log("Wallet", Wallet);
     }
     return this.Wallet;
   }
