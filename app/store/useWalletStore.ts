@@ -12,23 +12,33 @@ interface ServiceResponse {
 export const useWalletStore = create<WalletStore>((set) => ({
   bitcoin: {
     isConnected: false,
+    isLoading: false,
     address: null,
     balance: null,
     error: null,
   },
   stacks: {
     isConnected: false,
+    isLoading: false,
     address: null,
     balance: null,
     error: null,
   },
   solana: {
     isConnected: false,
+    isLoading: false,
     address: null,
     balance: null,
     error: null,
   },
   connectWallet: async (blockchain: BlockchainType) => {
+    set((state) => ({
+      [blockchain]: {
+        ...state[blockchain],
+        isLoading: true,
+      },
+    }));
+
     try {
       let response: ServiceResponse;
 
@@ -55,6 +65,7 @@ export const useWalletStore = create<WalletStore>((set) => ({
         [blockchain]: {
           ...state[blockchain],
           isConnected: true,
+          isLoading: false,
           address: response.address,
           balance: response.balance ?? null,
           error: null,
@@ -64,12 +75,20 @@ export const useWalletStore = create<WalletStore>((set) => ({
       set((state) => ({
         [blockchain]: {
           ...state[blockchain],
+          isLoading: false,
           error: error instanceof Error ? error.message : "Connection failed",
         },
       }));
     }
   },
   disconnectWallet: async (blockchain: BlockchainType) => {
+    set((state) => ({
+      [blockchain]: {
+        ...state[blockchain],
+        isLoading: true,
+      },
+    }));
+
     try {
       if (blockchain === "stacks") {
         stacksService.disconnect();
@@ -83,6 +102,7 @@ export const useWalletStore = create<WalletStore>((set) => ({
         [blockchain]: {
           ...state[blockchain],
           isConnected: false,
+          isLoading: false,
           address: null,
           balance: null,
           error: null,
@@ -92,6 +112,7 @@ export const useWalletStore = create<WalletStore>((set) => ({
       set((state) => ({
         [blockchain]: {
           ...state[blockchain],
+          isLoading: false,
           error:
             error instanceof Error ? error.message : "Disconnection failed",
         },
@@ -103,6 +124,13 @@ export const useWalletStore = create<WalletStore>((set) => ({
     address: string,
     amount: number,
   ) => {
+    set((state) => ({
+      [blockchain]: {
+        ...state[blockchain],
+        isLoading: true,
+      },
+    }));
+
     try {
       switch (blockchain) {
         case "bitcoin":
@@ -115,7 +143,20 @@ export const useWalletStore = create<WalletStore>((set) => ({
         default:
           throw new Error(`Unsupported blockchain: ${blockchain}`);
       }
+
+      set((state) => ({
+        [blockchain]: {
+          ...state[blockchain],
+          isLoading: false,
+        },
+      }));
     } catch (error) {
+      set((state) => ({
+        [blockchain]: {
+          ...state[blockchain],
+          isLoading: false,
+        },
+      }));
       throw error instanceof Error ? error : new Error("Transfer failed");
     }
   },

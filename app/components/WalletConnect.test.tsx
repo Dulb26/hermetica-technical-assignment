@@ -44,18 +44,21 @@ describe("WalletConnect Component", () => {
         address: null,
         balance: null,
         error: null,
+        isLoading: false,
       },
       stacks: {
         isConnected: false,
         address: null,
         balance: null,
         error: null,
+        isLoading: false,
       },
       solana: {
         isConnected: false,
         address: null,
         balance: null,
         error: null,
+        isLoading: false,
       },
     });
   });

@@ -2,6 +2,7 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import * as React from "react";
 import toast from "react-hot-toast";
 import { useWalletStore } from "../store/useWalletStore";
+import Spinner from "./Spinner";
 
 interface WalletConnectProps {
   type: "bitcoin" | "stacks" | "solana";
@@ -17,6 +18,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
   const { connectWallet, disconnectWallet } = useWalletStore();
   const walletState = useWalletStore((state) => state[type]);
   const isConnected = walletState.isConnected;
+  const isLoading = walletState.isLoading;
   const address = walletState.address || "";
   const balance = walletState.balance || "0";
 
@@ -131,6 +133,7 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
             <button
               data-testid={`${type}-connect-button`}
               onClick={isConnected ? handleDisconnect : handleConnect}
+              disabled={isLoading}
               className={`
                 w-full py-3 px-6 rounded-xl font-medium transition-all duration-300
                 flex items-center justify-center space-x-2
@@ -139,10 +142,20 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
                     ? "bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20"
                     : "bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 border border-blue-500/20"
                 }
+                ${isLoading ? "opacity-75 cursor-not-allowed" : ""}
               `}
               aria-label={`${isConnected ? "Disconnect" : "Connect"} ${type} wallet`}
             >
-              <span>{isConnected ? "Disconnect" : "Connect"} Wallet</span>
+              {isLoading ? (
+                <>
+                  <Spinner className="w-5 h-5" />
+                  <span>
+                    {isConnected ? "Disconnecting..." : "Connecting..."}
+                  </span>
+                </>
+              ) : (
+                <span>{isConnected ? "Disconnect" : "Connect"} Wallet</span>
+              )}
             </button>
           </Tooltip.Trigger>
           <Tooltip.Portal>
@@ -150,9 +163,13 @@ export const WalletConnect: React.FC<WalletConnectProps> = ({
               className="rounded-md bg-gray-900 px-4 py-2.5 text-sm text-gray-100 shadow-md"
               sideOffset={5}
             >
-              {isConnected
-                ? `Disconnect your ${type} wallet`
-                : `Connect your ${type} wallet ${type === "bitcoin" ? "to enable transfers" : "to continue"}`}
+              {isLoading
+                ? `${isConnected ? "Disconnecting" : "Connecting"} ${type} wallet...`
+                : isConnected
+                  ? `Disconnect your ${type} wallet`
+                  : `Connect your ${type} wallet ${
+                      type === "bitcoin" ? "to enable transfers" : "to continue"
+                    }`}
               <Tooltip.Arrow className="fill-gray-900" />
             </Tooltip.Content>
           </Tooltip.Portal>

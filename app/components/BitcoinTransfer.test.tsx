@@ -35,6 +35,7 @@ describe("BitcoinTransfer Component", () => {
         balance: null,
         error: null,
         isConnected: true,
+        isLoading: false,
       },
     });
   });
@@ -122,6 +123,7 @@ describe("BitcoinTransfer Component", () => {
         balance: null,
         error: null,
         isConnected: true,
+        isLoading: false,
       },
       transfer: mockTransfer,
     });
@@ -165,6 +167,7 @@ describe("BitcoinTransfer Component", () => {
         balance: null,
         error: null,
         isConnected: true,
+        isLoading: false,
       },
       transfer: mockTransfer,
     });

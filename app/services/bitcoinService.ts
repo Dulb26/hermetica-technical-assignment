@@ -1,31 +1,16 @@
-import { AddressPurpose } from "sats-connect";
+import { WalletFactory } from "./wallets/bitcoinWalletFactory";
+import { BitcoinWalletProvider } from "./wallets/types";
 
 class BitcoinService {
   private isConnected: boolean = false;
+  private wallet: BitcoinWalletProvider | null = null;
 
   async connect(): Promise<{ address: string }> {
     try {
-      const { default: Wallet } = await import("sats-connect");
-
-      const response = await Wallet.request("getAccounts", {
-        purposes: [AddressPurpose.Payment, AddressPurpose.Ordinals],
-      });
-
-      if (response.status === "success") {
-        this.isConnected = true;
-
-        const paymentAddress = response.result.find(
-          (addr) => addr.purpose === AddressPurpose.Payment,
-        );
-
-        if (!paymentAddress) {
-          throw new Error("No payment address found");
-        }
-
-        return { address: paymentAddress.address };
-      } else {
-        throw new Error(response.error.message);
-      }
+      this.wallet = await WalletFactory.createWallet();
+      const result = await this.wallet.connect();
+      this.isConnected = true;
+      return result;
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
@@ -34,14 +19,11 @@ class BitcoinService {
   }
 
   async getBalance(): Promise<string> {
+    if (!this.wallet) {
+      throw new Error("Wallet not connected");
+    }
     try {
-      const { default: Wallet } = await import("sats-connect");
-      const response = await Wallet.request("getBalance", undefined);
-
-      if (response.status === "success") {
-        return (Number(response.result.total) / 100000000).toString();
-      }
-      throw new Error("Failed to fetch balance");
+      return await this.wallet.getBalance();
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
@@ -50,28 +32,22 @@ class BitcoinService {
   }
 
   async disconnect(): Promise<void> {
+    if (this.wallet) {
+      await this.wallet.disconnect();
+    }
     this.isConnected = false;
+    this.wallet = null;
   }
 
   async sendBitcoin(
     recipientAddress: string,
     amountInSats: number,
   ): Promise<string> {
+    if (!this.wallet) {
+      throw new Error("Wallet not connected");
+    }
     try {
-      const { default: Wallet } = await import("sats-connect");
-      const response = await Wallet.request("sendTransfer", {
-        recipients: [
-          {
-            address: recipientAddress,
-            amount: amountInSats,
-          },
-        ],
-      });
-
-      if (response.status === "success") {
-        return response.result.txid;
-      }
-      throw new Error("Failed to send Bitcoin");
+      return await this.wallet.sendBitcoin(recipientAddress, amountInSats);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";
@@ -80,17 +56,11 @@ class BitcoinService {
   }
 
   async signMessage(message: string, address: string): Promise<string> {
+    if (!this.wallet) {
+      throw new Error("Wallet not connected");
+    }
     try {
-      const { default: Wallet } = await import("sats-connect");
-      const response = await Wallet.request("signMessage", {
-        message,
-        address,
-      });
-
-      if (response.status === "success") {
-        return response.result.signature;
-      }
-      throw new Error("Failed to sign message");
+      return await this.wallet.signMessage(message, address);
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : "Unknown error";

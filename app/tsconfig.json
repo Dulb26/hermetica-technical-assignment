@@ -8,9 +8,19 @@
     "outDir": "../.cache/typescript-app",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "noEmit": true
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*", "types/*"]
+    }
   },
-  "include": ["**/*.ts", "**/*.d.ts", "**/*.tsx", "**/*.json"],
+  "include": [
+    "**/*.ts",
+    "**/*.d.ts",
+    "**/*.tsx",
+    "**/*.json",
+    "types/**/*.d.ts"
+  ],
   "exclude": ["dist/**/*", "vite.config.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

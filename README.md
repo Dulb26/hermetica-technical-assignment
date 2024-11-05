@@ -1,3 +1,7 @@
+# Request
+
+Hi Gustavo, is it possible for you to make sure I can user Xverse, Leather and The Solana Wallet to connect to Bitcoin? (I think Phantom supports Bitcoin)
+
 # Blockchain Connection and Transfer App
 
 A responsive web application built with React, TypeScript, and Tailwind CSS that enables users to connect to multiple blockchains (Bitcoin, Stacks, and Solana) simultaneously and perform Bitcoin transfers using connected wallet.

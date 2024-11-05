@@ -2,6 +2,7 @@ export type BlockchainType = "bitcoin" | "stacks" | "solana";
 
 export interface WalletState {
   isConnected: boolean;
+  isLoading: boolean;
   address: string | null;
   balance: string | null;
   error: string | null;

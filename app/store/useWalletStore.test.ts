@@ -10,18 +10,21 @@ describe("Store", () => {
         balance: null,
         error: null,
         isConnected: false,
+        isLoading: false,
       },
       solana: {
         address: null,
         balance: null,
         error: null,
         isConnected: false,
+        isLoading: false,
       },
       stacks: {
         address: null,
         balance: null,
         error: null,
         isConnected: false,
+        isLoading: false,
       },
     });
   });
