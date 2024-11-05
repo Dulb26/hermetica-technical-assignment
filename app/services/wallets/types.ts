@@ -25,3 +25,24 @@ export interface PhantomBitcoinProvider {
     },
   ) => Promise<Uint8Array>;
 }
+
+export interface LeatherProvider {
+  request(
+    method: string,
+    params?: LeatherRequestParams,
+  ): Promise<LeatherResponse>;
+}
+
+export type LeatherRequestParams = {
+  message?: string;
+  paymentType?: string;
+  recipients?: Array<{ address: string; amount: string }>;
+};
+
+export type LeatherResponse = {
+  result: {
+    addresses?: Array<{ type: string; symbol: string; address: string }>;
+    signature?: string;
+    txid?: string;
+  };
+};

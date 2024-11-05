@@ -1,31 +1,4 @@
-import { BitcoinWalletProvider } from "./types";
-
-interface LeatherProvider {
-  request(
-    method: string,
-    params?: LeatherRequestParams,
-  ): Promise<LeatherResponse>;
-}
-
-type LeatherRequestParams = {
-  message?: string;
-  paymentType?: string;
-  recipients?: Array<{ address: string; amount: string }>;
-};
-
-type LeatherResponse = {
-  result: {
-    addresses?: Array<{ type: string; symbol: string; address: string }>;
-    signature?: string;
-    txid?: string;
-  };
-};
-
-declare global {
-  interface Window {
-    LeatherProvider?: LeatherProvider;
-  }
-}
+import { BitcoinWalletProvider, LeatherProvider } from "./types";
 
 export class LeatherWallet implements BitcoinWalletProvider {
   private provider: LeatherProvider | null = null;

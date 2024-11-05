@@ -1,4 +1,7 @@
-import { PhantomBitcoinProvider } from "../services/wallets/types";
+import {
+  LeatherProvider,
+  PhantomBitcoinProvider,
+} from "../services/wallets/types";
 
 declare global {
   interface Window {
@@ -16,6 +19,7 @@ declare global {
         signMessage(message: Uint8Array): Promise<{ signature: Uint8Array }>;
       };
     };
+    LeatherProvider?: LeatherProvider;
   }
 }
 
